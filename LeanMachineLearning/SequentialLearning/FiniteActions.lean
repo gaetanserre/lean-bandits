@@ -889,7 +889,7 @@ lemma IsAlgEnvSeq.isPredictable_sumRewards [StandardBorelSpace α] [Nonempty α]
     simp only [mem_range] at hi
     exact h_meas_i.mono ((IsAlgEnvSeq.filtration h.measurable_action h.measurable_feedback).mono
       (by lia)) le_rfl
-  · have h_meas_i := IsAlgEnvSeq.adapted_reward h.measurable_action h.measurable_feedback i
+  · have h_meas_i := IsAlgEnvSeq.adapted_feedback h.measurable_action h.measurable_feedback i
     simp only [mem_range] at hi
     exact h_meas_i.mono ((IsAlgEnvSeq.filtration h.measurable_action h.measurable_feedback).mono
       (by lia)) le_rfl

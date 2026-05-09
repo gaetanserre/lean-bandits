@@ -53,7 +53,7 @@ lemma condDistrib_reward'' [Countable α]
     𝓛[fun ω ↦ R n ω.1 | fun ω ↦ A n ω.1; 𝔓] =ᵐ[(𝔓).map (fun ω ↦ A n ω.1)] ν := by
   have hA := h.measurable_action
   have hR := h.measurable_feedback
-  have h_ra' : 𝓛[R n | A n; P] =ᵐ[P.map (A n)] ν := h.condDistrib_reward_stationaryEnv n
+  have h_ra' : 𝓛[R n | A n; P] =ᵐ[P.map (A n)] ν := h.condDistrib_feedback_stationaryEnv n
   have h_law : (𝔓).map (fun ω ↦ A n ω.1) = P.map (A n) := by
     change ((𝔓).map (A n ∘ Prod.fst)) = _
     rw [← Measure.map_map (by fun_prop) (by fun_prop), ← Measure.fst, Measure.fst_prod]
@@ -96,7 +96,7 @@ lemma condIndepFun_reward_stepsUntil_action' [StandardBorelSpace Ω]
     refine h_indep.of_measurable_right (hX := hA 0) ?_
     exact measurable_comap_indicator_stepsUntil_eq_zero a m
   · have h_indep : R n ⟂ᵢ[A n, hA n; P] fun ω ↦ (IsAlgEnvSeq.hist A R (n - 1) ω, A n ω) :=
-      IsAlgEnvSeq.condIndepFun_reward_hist_action_action' h n (by grind)
+      IsAlgEnvSeq.condIndepFun_feedback_hist_action_action' h n (by grind)
     refine h_indep.of_measurable_right (hX := hA n) ?_
     exact measurable_comap_indicator_stepsUntil_eq hA hR a m n
 

@@ -85,7 +85,7 @@ variable [StandardBorelSpace α] [Nonempty α] [StandardBorelSpace R] [Nonempty 
 lemma hascondDistrib_reward_onlineEvalEnv
     (h : IsAlgEnvSeq A R' alg (onlineEvalEnv g hg) P) (n : ℕ) :
     HasCondDistrib (R' n) (A n) (Kernel.deterministic (g n) (hg n)) P := by
-  simpa using IsObliviousEnv.hasCondDistrib_reward h n
+  simpa using IsObliviousEnv.hasCondDistrib_feedback h n
 
 lemma reward_onlineEvalEnv_ae_eq_eval_action
     (h : IsAlgEnvSeq A R' alg (onlineEvalEnv g hg) P) (n : ℕ) :
@@ -130,7 +130,7 @@ variable [StandardBorelSpace α] [Nonempty α] [StandardBorelSpace R] [Nonempty 
 
 lemma hascondDistrib_reward_evalEnv (h : IsAlgEnvSeq A R' alg (evalEnv f hf) P) (n : ℕ) :
     HasCondDistrib (R' n) (A n) (Kernel.deterministic f hf) P := by
-  simpa using IsObliviousEnv.hasCondDistrib_reward h n
+  simpa using IsObliviousEnv.hasCondDistrib_feedback h n
 
 lemma reward_evalEnv_ae_eq_eval_action (h : IsAlgEnvSeq A R' alg (evalEnv f hf) P) (n : ℕ) :
     R' n =ᵐ[P] f ∘ A n := reward_onlineEvalEnv_ae_eq_eval_action h n
