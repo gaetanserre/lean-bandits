@@ -2,6 +2,7 @@ set -x -e
 
 # Build tutorial
 cd tutorial
+set -x -e
 lake build
 lake exe manual --output _out/site
 mkdir -p _out/site/html-multi/static
