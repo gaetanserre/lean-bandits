@@ -8,7 +8,6 @@ module
 public import LeanMachineLearning.Online.Bandit.ArrayProbSpace
 public import LeanMachineLearning.Probability.Moments.SubGaussian
 public import LeanMachineLearning.SequentialLearning.BayesStationaryEnv
-public import LeanMachineLearning.SequentialLearning.IonescuTulceaSpace
 
 /-! # Law of the sum of rewards
 -/
