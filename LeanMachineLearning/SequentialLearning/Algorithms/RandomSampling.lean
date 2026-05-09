@@ -44,24 +44,27 @@ open MeasureTheory ProbabilityTheory Learning Finset ENNReal Filter
 
 open scoped Topology
 
-variable {α β Ω : Type*} [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [Nonempty α]
-  [StandardBorelSpace β] [Nonempty β] {μ : Measure α} [IsProbabilityMeasure μ] [MeasurableSpace Ω]
+namespace Learning
+
+variable {𝓐 𝓨 Ω : Type*} [MeasurableSpace 𝓐] [MeasurableSpace 𝓨] [StandardBorelSpace 𝓐] [Nonempty 𝓐]
+  [StandardBorelSpace 𝓨] [Nonempty 𝓨] {μ : Measure 𝓐} [IsProbabilityMeasure μ] [MeasurableSpace Ω]
   {P : Measure Ω} [IsProbabilityMeasure P]
 
 open Set in
-/-- The Pure Random Search algorithm. -/
+/-- The _Random Sampling_ algorithm, which samples from a fixed probability
+measure at each iteration. -/
 @[simps]
-noncomputable def randomSampling (μ : Measure α) [IsProbabilityMeasure μ] : Algorithm α β where
+noncomputable def randomSampling (μ : Measure 𝓐) [IsProbabilityMeasure μ] : Algorithm 𝓐 𝓨 where
   policy _ := Kernel.const _ μ
   p0 := μ
 
 namespace randomSampling
 
-variable {A : ℕ → Ω → α} {R : ℕ → Ω → β} {f : α → β} (hf : Measurable f)
+variable {A : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} {env : Environment 𝓐 𝓨}
 
 /-- Each action follows the distribution μ. -/
-lemma hasLaw_actions {env : Environment α β}
-    (h : IsAlgEnvSeq A R (randomSampling μ) env P) (n : ℕ) : HasLaw (A n) μ P := by
+lemma hasLaw_action (h : IsAlgEnvSeq A Y (randomSampling μ) env P) (n : ℕ) :
+    HasLaw (A n) μ P := by
   by_cases hn : n = 0
   · rw [hn]
     exact h.hasLaw_action_zero
@@ -78,19 +81,19 @@ lemma hasLaw_rewards (h : IsAlgEnvSeq A R (randomSampling μ) (evalEnv hf) P) (n
   rw [← Measure.map_map hf hA, (hasLaw_actions h n).map_eq]
 
 /-- Actions are mutually independent. -/
-lemma iIndep_actions {env : Environment α β}
-    (h : IsAlgEnvSeq A R (randomSampling μ) env P) : iIndepFun A P := by
-  have hA := h.measurable_A
+lemma iIndep_action (h : IsAlgEnvSeq A Y (randomSampling μ) env P) :
+    iIndepFun A P := by
+  have hA := h.measurable_action
   rw [iIndepFun_nat_iff_forall_indepFun (by fun_prop)]
   intro n
   have condDistrib_eq := (h.hasCondDistrib_action n).condDistrib_eq
   simp only [randomSampling_policy] at condDistrib_eq
-  have law_eq := (hasLaw_actions h (n + 1)).map_eq
+  have law_eq := (hasLaw_action h (n + 1)).map_eq
   rw [← law_eq, ← indepFun_iff_condDistrib_eq_const ?_ (by fun_prop)] at condDistrib_eq
-  · have meas_fst : Measurable (fun (f : Iic n → α × β) ↦ (fun i ↦ (f i).1)) := by
+  · have meas_fst : Measurable (fun (f : Iic n → 𝓐 × 𝓨) ↦ (fun i ↦ (f i).1)) := by
       fun_prop
     exact (condDistrib_eq.comp meas_fst measurable_id).symm
-  · exact (IsAlgEnvSeq.measurable_hist (h.measurable_A) (h.measurable_R) n).aemeasurable
+  · exact (IsAlgEnvSeq.measurable_hist (h.measurable_action) (h.measurable_feedback) n).aemeasurable
 
 /-- Rewards are mutually independent. -/
 lemma iIndep_rewards (h : IsAlgEnvSeq A R (randomSampling μ) (evalEnv hf) P) :

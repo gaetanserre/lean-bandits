@@ -37,7 +37,7 @@ open Classical in
 noncomputable
 def UCB.nextArm (hK : 0 < K) (c : ℝ) (n : ℕ) (h : Iic n → Fin K × ℝ) : Fin K :=
   have : Nonempty (Fin K) := Fin.pos_iff_nonempty.mp hK
-  if n < K - 1 then ⟨(n + 1) % K, Nat.mod_lt _ hK⟩ else
+  if n < K - 1 then RoundRobin.nextAction hK n else
   measurableArgmax (fun h a ↦ empMean' n h a + ucbWidth' c n h a) h
 
 @[fun_prop]
@@ -67,17 +67,16 @@ variable {hK : 0 < K} {c : ℝ} {ν : Kernel (Fin K) ℝ} [IsMarkovKernel ν]
 lemma isAlgEnvSeqUntil_roundRobinAlgorithm [Nonempty (Fin K)]
     (h : IsAlgEnvSeq A R (ucbAlgorithm hK c) (stationaryEnv ν) P) :
     IsAlgEnvSeqUntil A R (roundRobinAlgorithm hK) (stationaryEnv ν) P (K - 1) where
-  measurable_A := h.measurable_A
-  measurable_R := h.measurable_R
+  measurable_action := h.measurable_action
+  measurable_feedback := h.measurable_feedback
   hasLaw_action_zero := h.hasLaw_action_zero
-  hasCondDistrib_reward_zero := h.hasCondDistrib_reward_zero
+  hasCondDistrib_feedback_zero := h.hasCondDistrib_feedback_zero
   hasCondDistrib_action n hn := by
     convert h.hasCondDistrib_action n using 1
     simp only [roundRobinAlgorithm, detAlgorithm_policy, ucbAlgorithm]
     congr 1 with h
-    unfold UCB.nextArm RoundRobin.nextArm
-    simp [hn]
-  hasCondDistrib_reward n _ := h.hasCondDistrib_reward n
+    simp [UCB.nextArm, hn]
+  hasCondDistrib_feedback n _ := h.hasCondDistrib_feedback n
 
 section AlgorithmBehavior
 
@@ -103,7 +102,7 @@ lemma ucbWidth_eq_ucbWidth' (c : ℝ) (a : Fin K) (n : ℕ) (ω : Ω) (hn : n �
 lemma arm_zero [Nonempty (Fin K)]
     (h : IsAlgEnvSeq A R (ucbAlgorithm hK c) (stationaryEnv ν) P) :
     A 0 =ᵐ[P] fun _ ↦ ⟨0, hK⟩ :=
-  RoundRobin.arm_zero ((isAlgEnvSeqUntil_roundRobinAlgorithm h).mono zero_le')
+  RoundRobin.action_zero ((isAlgEnvSeqUntil_roundRobinAlgorithm h).mono zero_le')
 
 lemma arm_ae_eq_ucbNextArm [Nonempty (Fin K)]
     (h : IsAlgEnvSeq A R (ucbAlgorithm hK c) (stationaryEnv ν) P) (n : ℕ) :
@@ -141,7 +140,8 @@ lemma forall_arm_eq_mod_of_lt [Nonempty (Fin K)]
   | succ n _ =>
     filter_upwards [arm_ae_eq_ucbNextArm h n] with h h_eq
     rw [h_eq, nextArm, if_pos]
-    grind
+    · rfl
+    · grind
 
 lemma forall_ucbIndex_le_ucbIndex_arm [Nonempty (Fin K)]
     (h : IsAlgEnvSeq A R (ucbAlgorithm hK c) (stationaryEnv ν) P) (a : Fin K) :
@@ -452,7 +452,6 @@ lemma constSum_lt_top (c : ℝ) (n : ℕ) : constSum c n < ∞ := by
   simp only [one_div, ENNReal.inv_lt_top]
   positivity
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Bound on the expectation of the number of pulls of each arm by the UCB algorithm. -/
 lemma expectation_pullCount_le' [Nonempty (Fin K)]
     (h : IsAlgEnvSeq A R (ucbAlgorithm hK (c * σ2)) (stationaryEnv ν) P)
@@ -460,8 +459,8 @@ lemma expectation_pullCount_le' [Nonempty (Fin K)]
     (hσ2 : σ2 ≠ 0) (hc : 0 < c) (a : Fin K) (h_gap : 0 < gap ν a) (n : ℕ) :
     ∫⁻ ω, pullCount A a n ω ∂P ≤
       ENNReal.ofReal (8 * c * σ2 * log (n + 1) / gap ν a ^ 2 + 1) + 1 + 2 * constSum c n := by
-  have hA := h.measurable_A
-  have hR := h.measurable_R
+  have hA := h.measurable_action
+  have hR := h.measurable_feedback
   by_cases hn_zero : n = 0
   · simp [hn_zero]
   let C a : ℕ := ⌈8 * c * σ2 * log (n + 1) / gap ν a ^ 2⌉₊
@@ -549,7 +548,7 @@ lemma expectation_pullCount_le [Nonempty (Fin K)]
     (hσ2 : σ2 ≠ 0) (hc : 0 < c) (a : Fin K) (h_gap : 0 < gap ν a) (n : ℕ) :
     P[fun ω ↦ (pullCount A a n ω : ℝ)] ≤
       8 * c * σ2 * log (n + 1) / gap ν a ^ 2 + 2 + 2 * (constSum c n).toReal := by
-  have hA := h.measurable_A
+  have hA := h.measurable_action
   have h := expectation_pullCount_le' h hν hσ2 hc a h_gap n (hK := hK)
   simp_rw [← ENNReal.ofReal_natCast] at h
   rw [← ofReal_integral_eq_lintegral_ofReal] at h
