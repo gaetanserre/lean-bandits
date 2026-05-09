@@ -170,8 +170,8 @@ lemma feedbackCondAction_obliviousEnv (ν : ℕ → Kernel 𝓐 𝓨) [hν : ∀
     rw [← Kernel.prodMkLeft_inj (γ := Iic n → 𝓐 × 𝓨)]
     exact h_eq.symm
 
-/-- A stationary environment, in which the distribution of the next reward depends only on the last
-action. -/
+/-- A stationary environment, in which the distribution of the next feedback depends only on the
+last action. -/
 -- ANCHOR: stationaryEnv
 def stationaryEnv (ν : Kernel 𝓐 𝓨) [IsMarkovKernel ν] : Environment 𝓐 𝓨 := obliviousEnv fun _ ↦ ν
 -- ANCHOR_END: stationaryEnv
