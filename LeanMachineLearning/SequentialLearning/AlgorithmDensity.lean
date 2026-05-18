@@ -111,21 +111,21 @@ lemma hasLaw_hist_withDensity (h : IsAlgEnvSeq A R' alg env P) (h₀ : IsAlgEnvS
       rw [h.hasLaw_hist_zero.map_eq, h₀.hasLaw_hist_zero.map_eq, h.hasLaw_step_zero.map_eq,
         h₀.hasLaw_step_zero.map_eq]
       rw [← Measure.withDensity_rnDeriv_eq _ _ hc.p0,
-        Measure.withDensity_compProd_left (by fun_prop)]
-      exact Measure.withDensity_map_equiv (by fun_prop)
+        Measure.compProd_withDensity_left (by fun_prop)]
+      exact Measure.map_withDensity_equiv (by fun_prop)
     | succ n ih =>
       let ρ h' (ar : α × R) := Kernel.rnDeriv (alg.policy n) (alg₀.policy n) h' ar.1
       have hs : stepKernel alg env n = (stepKernel alg₀ env n).withDensity ρ := by
         rw [stepKernel, ← Kernel.withDensity_rnDeriv_eq' (hc.policy n)]
-        exact Kernel.withDensity_compProd_left (Kernel.measurable_rnDeriv _ _)
+        exact Kernel.compProd_withDensity_left (Kernel.measurable_rnDeriv _ _)
       have : IsMarkovKernel ((stepKernel alg₀ env n).withDensity ρ) := by
         rw [← hs]
         infer_instance
       rw [(h.hasLaw_hist_succ n).map_eq, (h₀.hasLaw_hist_succ n).map_eq,
           Measure.compProd_congr (h.hasCondDistrib_step n).condDistrib_eq,
           Measure.compProd_congr (h₀.hasCondDistrib_step n).condDistrib_eq, ih, hs,
-          Measure.withDensity_compProd_withDensity (by fun_prop) (by fun_prop)]
-      exact Measure.withDensity_map_equiv (by fun_prop)
+          Measure.compProd_withDensity_withDensity (by fun_prop) (by fun_prop)]
+      exact Measure.map_withDensity_equiv (by fun_prop)
 
 end IsAlgEnvSeq
 
@@ -198,7 +198,7 @@ lemma hasCondDistrib_env_hist (h : IsBayesAlgEnvSeq Q κ alg E A R' P)
       Measure.map_swap_withDensity_fst (by fun_prop),
       ← h₀.hasLaw_env.map_eq, map_swap_compProd_map_condDistrib (by fun_prop),
       ← compProd_map_condDistrib (by fun_prop),
-      ← Measure.withDensity_compProd_left (by fun_prop),
+      ← Measure.compProd_withDensity_left (by fun_prop),
       ← (hasLaw_hist_withDensity h h₀ hc n).map_eq]
 
 end IsBayesAlgEnvSeq
