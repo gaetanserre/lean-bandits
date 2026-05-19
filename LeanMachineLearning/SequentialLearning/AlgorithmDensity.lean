@@ -112,7 +112,7 @@ lemma hasLaw_hist_withDensity (h : IsAlgEnvSeq A R' alg env P) (h₀ : IsAlgEnvS
         h₀.hasLaw_step_zero.map_eq]
       rw [← Measure.withDensity_rnDeriv_eq _ _ hc.p0,
         Measure.compProd_withDensity_left (by fun_prop)]
-      exact Measure.map_withDensity_equiv (by fun_prop)
+      exact map_withDensity_equiv (by fun_prop)
     | succ n ih =>
       let ρ h' (ar : α × R) := Kernel.rnDeriv (alg.policy n) (alg₀.policy n) h' ar.1
       have hs : stepKernel alg env n = (stepKernel alg₀ env n).withDensity ρ := by
@@ -125,7 +125,7 @@ lemma hasLaw_hist_withDensity (h : IsAlgEnvSeq A R' alg env P) (h₀ : IsAlgEnvS
           Measure.compProd_congr (h.hasCondDistrib_step n).condDistrib_eq,
           Measure.compProd_congr (h₀.hasCondDistrib_step n).condDistrib_eq, ih, hs,
           Measure.compProd_withDensity_withDensity (by fun_prop) (by fun_prop)]
-      exact Measure.map_withDensity_equiv (by fun_prop)
+      exact map_withDensity_equiv (by fun_prop)
 
 end IsAlgEnvSeq
 
@@ -195,7 +195,7 @@ lemma hasCondDistrib_env_hist (h : IsBayesAlgEnvSeq Q κ alg E A R' P)
       ← map_swap_compProd_map_condDistrib (by fun_prop), h.hasLaw_env.map_eq,
       Measure.compProd_eq_compProd_withDensity (by fun_prop)
         (h.condDistrib_hist_eq_condDistrib_hist_withDensity h₀ hc n),
-      Measure.map_swap_withDensity_fst (by fun_prop),
+      map_swap_withDensity_fst (by fun_prop),
       ← h₀.hasLaw_env.map_eq, map_swap_compProd_map_condDistrib (by fun_prop),
       ← compProd_map_condDistrib (by fun_prop),
       ← Measure.compProd_withDensity_left (by fun_prop),

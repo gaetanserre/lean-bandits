@@ -17,23 +17,7 @@ open scoped ENNReal
 variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
 variable {μ : Measure α}
 
-namespace Measure
-
-lemma compProd_withDensity_left [SFinite μ] {κ : Kernel α β} [IsSFiniteKernel κ] {f : α → ℝ≥0∞}
-    (hf : Measurable f) : (μ.withDensity f) ⊗ₘ κ = (μ ⊗ₘ κ).withDensity (f ∘ Prod.fst) := by
-  refine Measure.ext_of_lintegral _ fun g hg ↦ ?_
-  calc ∫⁻ p, g p ∂((μ.withDensity f) ⊗ₘ κ)
-      = ∫⁻ a, ∫⁻ b, g (a, b) ∂κ a ∂(μ.withDensity f) :=
-        Measure.lintegral_compProd hg
-    _ = ∫⁻ a, f a * ∫⁻ b, g (a, b) ∂κ a ∂μ :=
-        lintegral_withDensity_eq_lintegral_mul _ hf hg.lintegral_kernel_prod_right'
-    _ = ∫⁻ a, ∫⁻ b, f a * g (a, b) ∂κ a ∂μ := by
-        refine lintegral_congr fun a ↦ ?_
-        rw [← lintegral_const_mul _ (by fun_prop)]
-    _ = ∫⁻ p, (f ∘ Prod.fst) p * g p ∂(μ ⊗ₘ κ) :=
-        (Measure.lintegral_compProd ((hf.comp measurable_fst).mul hg)).symm
-    _ = ∫⁻ p, g p ∂((μ ⊗ₘ κ).withDensity (f ∘ Prod.fst)) :=
-        (lintegral_withDensity_eq_lintegral_mul _ (hf.comp measurable_fst) hg).symm
+namespace MeasureTheory
 
 lemma map_withDensity_comp {g : α → γ} {f : γ → ℝ≥0∞} (hg : Measurable g) (hf : Measurable f) :
     (μ.withDensity (f ∘ g)).map g = (μ.map g).withDensity f := by
@@ -58,6 +42,26 @@ lemma map_swap_withDensity_fst {μ : Measure (α × β)} {f : β → ℝ≥0∞}
     rfl
   _ = (μ.map Prod.swap).withDensity (f ∘ Prod.fst) :=
     map_withDensity_comp measurable_swap (hf.comp measurable_fst)
+
+end MeasureTheory
+
+namespace MeasureTheory.Measure
+
+lemma compProd_withDensity_left [SFinite μ] {κ : Kernel α β} [IsSFiniteKernel κ] {f : α → ℝ≥0∞}
+    (hf : Measurable f) : (μ.withDensity f) ⊗ₘ κ = (μ ⊗ₘ κ).withDensity (f ∘ Prod.fst) := by
+  refine Measure.ext_of_lintegral _ fun g hg ↦ ?_
+  calc ∫⁻ p, g p ∂((μ.withDensity f) ⊗ₘ κ)
+      = ∫⁻ a, ∫⁻ b, g (a, b) ∂κ a ∂(μ.withDensity f) :=
+        Measure.lintegral_compProd hg
+    _ = ∫⁻ a, f a * ∫⁻ b, g (a, b) ∂κ a ∂μ :=
+        lintegral_withDensity_eq_lintegral_mul _ hf hg.lintegral_kernel_prod_right'
+    _ = ∫⁻ a, ∫⁻ b, f a * g (a, b) ∂κ a ∂μ := by
+        refine lintegral_congr fun a ↦ ?_
+        rw [← lintegral_const_mul _ (by fun_prop)]
+    _ = ∫⁻ p, (f ∘ Prod.fst) p * g p ∂(μ ⊗ₘ κ) :=
+        (Measure.lintegral_compProd ((hf.comp measurable_fst).mul hg)).symm
+    _ = ∫⁻ p, g p ∂((μ ⊗ₘ κ).withDensity (f ∘ Prod.fst)) :=
+        (lintegral_withDensity_eq_lintegral_mul _ (hf.comp measurable_fst) hg).symm
 
 lemma compProd_withDensity_withDensity [SFinite μ] {κ : Kernel α γ} [IsSFiniteKernel κ]
     {f : α → ℝ≥0∞} {g : α → γ → ℝ≥0∞} (hf : Measurable f) (hg : Measurable (Function.uncurry g))
@@ -87,7 +91,7 @@ lemma compProd_eq_compProd_withDensity [SFinite μ] {κ η : Kernel α β} [IsSF
     _ = ∫⁻ p, g p ∂((μ ⊗ₘ η).withDensity (f ∘ Prod.snd)) :=
         (lintegral_withDensity_eq_lintegral_mul _ (hf.comp measurable_snd) hg).symm
 
-end Measure
+end MeasureTheory.Measure
 
 namespace ProbabilityTheory.Kernel
 
