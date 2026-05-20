@@ -33,9 +33,9 @@ lemma map_equiv_withDensity {e : α ≃ᵐ β} {f : α → ℝ≥0∞} (hf : Mea
   rfl
 
 lemma map_swap_withDensity_comp_snd {μ : Measure (α × β)} {f : β → ℝ≥0∞} (hf : Measurable f) :
-    (μ.withDensity (f ∘ Prod.snd)).map Prod.swap =
-      (μ.map Prod.swap).withDensity (f ∘ Prod.fst) := by
-  rw [← map_withDensity_comp measurable_swap (hf.comp measurable_fst)]
+    (μ.withDensity (fun ab ↦ f ab.2)).map Prod.swap =
+      (μ.map Prod.swap).withDensity (fun ba ↦ f ba.1) := by
+  rw [← map_withDensity_comp measurable_swap (by fun_prop)]
   rfl
 
 end MeasureTheory
@@ -43,19 +43,18 @@ end MeasureTheory
 namespace MeasureTheory.Measure
 
 lemma compProd_withDensity_left [SFinite μ] {κ : Kernel α β} [IsSFiniteKernel κ] {f : α → ℝ≥0∞}
-    (hf : Measurable f) : (μ.withDensity f) ⊗ₘ κ = (μ ⊗ₘ κ).withDensity (f ∘ Prod.fst) := by
+    (hf : Measurable f) : (μ.withDensity f) ⊗ₘ κ = (μ ⊗ₘ κ).withDensity (fun ab ↦ f ab.1) := by
   refine Measure.ext_of_lintegral _ fun g hg ↦ ?_
-  calc ∫⁻ p, g p ∂((μ.withDensity f) ⊗ₘ κ)
+  calc ∫⁻ ab, g ab ∂((μ.withDensity f) ⊗ₘ κ)
       = ∫⁻ a, ∫⁻ b, g (a, b) ∂κ a ∂(μ.withDensity f) :=
         Measure.lintegral_compProd hg
     _ = ∫⁻ a, f a * ∫⁻ b, g (a, b) ∂κ a ∂μ :=
         lintegral_withDensity_eq_lintegral_mul _ hf hg.lintegral_kernel_prod_right'
-    _ = ∫⁻ a, ∫⁻ b, f a * g (a, b) ∂κ a ∂μ := by
-        refine lintegral_congr fun a ↦ ?_
-        rw [← lintegral_const_mul _ (by fun_prop)]
-    _ = ∫⁻ p, (f ∘ Prod.fst) p * g p ∂(μ ⊗ₘ κ) :=
+    _ = ∫⁻ a, ∫⁻ b, f a * g (a, b) ∂κ a ∂μ :=
+        lintegral_congr fun a ↦ (lintegral_const_mul _ (by fun_prop)).symm
+    _ = ∫⁻ ab, (fun ab ↦ f ab.1) ab * g ab ∂(μ ⊗ₘ κ) :=
         (Measure.lintegral_compProd ((hf.comp measurable_fst).mul hg)).symm
-    _ = ∫⁻ p, g p ∂((μ ⊗ₘ κ).withDensity (f ∘ Prod.fst)) :=
+    _ = ∫⁻ ab, g ab ∂((μ ⊗ₘ κ).withDensity (fun ab ↦ f ab.1)) :=
         (lintegral_withDensity_eq_lintegral_mul _ (hf.comp measurable_fst) hg).symm
 
 lemma compProd_withDensity_withDensity [SFinite μ] {κ : Kernel α γ} [IsSFiniteKernel κ]
@@ -67,7 +66,8 @@ lemma compProd_withDensity_withDensity [SFinite μ] {κ : Kernel α γ} [IsSFini
 
 lemma compProd_eq_compProd_withDensity [SFinite μ] {κ η : Kernel α β} [IsSFiniteKernel κ]
     [IsSFiniteKernel η] {f : β → ℝ≥0∞} (hf : Measurable f)
-    (h : κ =ᵐ[μ] η.withDensity (fun _ b ↦ f b)) : μ ⊗ₘ κ = (μ ⊗ₘ η).withDensity (f ∘ Prod.snd) := by
+    (h : κ =ᵐ[μ] η.withDensity (fun _ b ↦ f b)) :
+    μ ⊗ₘ κ = (μ ⊗ₘ η).withDensity (fun ab ↦ f ab.2) := by
   refine Measure.ext_of_lintegral _ fun g hg ↦ ?_
   calc ∫⁻ p, g p ∂(μ ⊗ₘ κ)
       = ∫⁻ a, ∫⁻ b, g (a, b) ∂κ a ∂μ :=
