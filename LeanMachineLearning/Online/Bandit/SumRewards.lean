@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Rémy Degenne
+Authors: Rémy Degenne, Paulo Rauber
 -/
 module
 
@@ -665,7 +665,7 @@ variable {𝓔 Ω : Type*} [MeasurableSpace 𝓔] [MeasurableSpace Ω]
 variable {K : ℕ} [Nonempty (Fin K)]
 variable {Q : Measure 𝓔} {κ : Kernel (𝓔 × Fin K) ℝ} [IsMarkovKernel κ]
 variable {alg : Algorithm (Fin K) ℝ}
-variable {E : Ω → 𝓔} {A : ℕ → Ω → (Fin K)} {R' : ℕ → Ω → ℝ}
+variable {E : Ω → 𝓔} {A : ℕ → Ω → (Fin K)} {R : ℕ → Ω → ℝ}
 variable {P : Measure Ω} [IsProbabilityMeasure P]
 
 /-- Auxiliary lemma for `prob_empMean_sub_actionMean_ge_le`. -/
@@ -682,11 +682,11 @@ private lemma sqrt_two_mul_le_sub {k : ℕ} (hk : k ≠ 0) {s μ σ l : ℝ}
     _ = s - k * μ := by
       field_simp
 
-lemma prob_empMean_sub_actionMean_ge_le (h : IsBayesAlgEnvSeq Q κ alg E A R' P) {σ2 : ℝ≥0}
+lemma prob_empMean_sub_actionMean_ge_le (h : IsBayesAlgEnvSeq Q κ alg E A R P) {σ2 : ℝ≥0}
     (hσ2 : 0 < σ2) (hs : ∀ e a, HasSubgaussianMGF (fun x ↦ x - (κ (e, a))[id]) σ2 (κ (e, a)))
     {δ : ℝ} (hδ : 0 < δ) (n : ℕ) :
     P {ω | ∃ t < n, ∃ a, pullCount A a t ω ≠ 0 ∧
-      √(2 * σ2 * Real.log (1 / δ) / pullCount A a t ω) ≤ empMean A R' a t ω - actionMean κ E a ω}
+      √(2 * σ2 * Real.log (1 / δ) / pullCount A a t ω) ≤ empMean A R a t ω - actionMean κ E a ω}
       ≤ ENNReal.ofReal (K * (n - 1) * δ) := by
   have := h.measurable_E
   have := h.measurable_action
@@ -695,15 +695,15 @@ lemma prob_empMean_sub_actionMean_ge_le (h : IsBayesAlgEnvSeq Q κ alg E A R' P)
     √(2 * pullCount IT.action a t τ * σ2 * Real.log (1 / δ)) ≤
       sumRewards IT.action IT.feedback a t τ - pullCount IT.action a t τ * actionMean κ id a e}
   calc
-    _ ≤ (P.map (fun ω ↦ (E ω, trajectory A R' ω))) S := by
+    _ ≤ (P.map (fun ω ↦ (E ω, trajectory A R ω))) S := by
         rw [Measure.map_apply (by fun_prop) (by measurability)]
         apply measure_mono
         intro ω ⟨t, ht, a, hpc, hle⟩
         rw [empMean] at hle
         exact ⟨a, t, ht, hpc, sqrt_two_mul_le_sub hpc hle⟩
-    _ = (P.map E ⊗ₘ condDistrib (trajectory A R') E P) S := by
+    _ = (P.map E ⊗ₘ condDistrib (trajectory A R) E P) S := by
         rw [← compProd_map_condDistrib (by fun_prop)]
-    _ = ∫⁻ e, condDistrib (trajectory A R') E P e (Prod.mk e ⁻¹' S) ∂(P.map E) :=
+    _ = ∫⁻ e, condDistrib (trajectory A R) E P e (Prod.mk e ⁻¹' S) ∂(P.map E) :=
         Measure.compProd_apply (by measurability)
     _ ≤ ∫⁻ e, ENNReal.ofReal (Fintype.card (Fin K) * (n - 1) * δ) ∂(P.map E) := by
         apply lintegral_mono_ae
@@ -719,12 +719,12 @@ private lemma sub_le_neg_sqrt_two_mul {k : ℕ} (hk : k ≠ 0) {s μ σ l : ℝ}
   have : √(2 * k * σ * l) ≤ -s - k * -μ := sqrt_two_mul_le_sub hk (by grind)
   linarith
 
-lemma prob_empMean_bestAction_sub_actionMean_le_le (h : IsBayesAlgEnvSeq Q κ alg E A R' P)
+lemma prob_empMean_bestAction_sub_actionMean_le_le (h : IsBayesAlgEnvSeq Q κ alg E A R P)
     {σ2 : ℝ≥0} (hσ2 : 0 < σ2)
     (hs : ∀ e a, HasSubgaussianMGF (fun x ↦ x - (κ (e, a))[id]) σ2 (κ (e, a)))
     {δ : ℝ} (hδ : 0 < δ) (n : ℕ) :
     P {ω | ∃ t < n, pullCount A (bestAction κ E ω) t ω ≠ 0 ∧
-        empMean A R' (bestAction κ E ω) t ω - actionMean κ E (bestAction κ E ω) ω ≤
+        empMean A R (bestAction κ E ω) t ω - actionMean κ E (bestAction κ E ω) ω ≤
           -√(2 * σ2 * Real.log (1 / δ) / (pullCount A (bestAction κ E ω) t ω))}
       ≤ ENNReal.ofReal ((n - 1) * δ) := by
   have := h.measurable_E
@@ -735,15 +735,15 @@ lemma prob_empMean_bestAction_sub_actionMean_le_le (h : IsBayesAlgEnvSeq Q κ al
         pullCount IT.action (bestAction κ id e) t τ * actionMean κ id (bestAction κ id e) e ≤
           -√(2 * pullCount IT.action (bestAction κ id e) t τ * σ2 * Real.log (1 / δ))}
   calc
-    _ ≤ (P.map (fun ω ↦ (E ω, trajectory A R' ω))) S := by
+    _ ≤ (P.map (fun ω ↦ (E ω, trajectory A R ω))) S := by
         rw [Measure.map_apply (by fun_prop) (by measurability)]
         apply measure_mono
         intro ω ⟨t, ht, hpc, hle⟩
         rw [empMean] at hle
         exact ⟨t, ht, hpc, sub_le_neg_sqrt_two_mul hpc hle⟩
-    _ = (P.map E ⊗ₘ condDistrib (trajectory A R') E P) S := by
+    _ = (P.map E ⊗ₘ condDistrib (trajectory A R) E P) S := by
         rw [← compProd_map_condDistrib (by fun_prop)]
-    _ = ∫⁻ e, condDistrib (trajectory A R') E P e (Prod.mk e ⁻¹' S) ∂(P.map E) :=
+    _ = ∫⁻ e, condDistrib (trajectory A R) E P e (Prod.mk e ⁻¹' S) ∂(P.map E) :=
         Measure.compProd_apply (by measurability)
     _ ≤ ∫⁻ e, ENNReal.ofReal ((n - 1) * δ) ∂(P.map E) := by
         apply lintegral_mono_ae
