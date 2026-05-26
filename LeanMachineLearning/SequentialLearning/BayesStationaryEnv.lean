@@ -45,16 +45,6 @@ structure IsBayesAlgEnvSeq
 
 namespace IsBayesAlgEnvSeq
 
-/-- A random variable that gives the sequence of pairs of actions and feedbacks
-(cf. `IsAlgEnvSeq.step`). -/
-def trajectory (A : ℕ → Ω → 𝓐) (Y : ℕ → Ω → 𝓨) : Ω → ℕ → 𝓐 × 𝓨 := fun ω n ↦ (A n ω, Y n ω)
-
-@[fun_prop]
-lemma measurable_trajectory {A : ℕ → Ω → 𝓐} {Y : ℕ → Ω → 𝓨} (hA : ∀ n, Measurable (A n))
-    (hR : ∀ n, Measurable (Y n)) : Measurable (trajectory A Y) := by
-  unfold trajectory
-  fun_prop
-
 section Real
 
 /-- A random variable that gives the mean feedback of action `a`. -/
