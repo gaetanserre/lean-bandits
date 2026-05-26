@@ -6,13 +6,15 @@ Authors: Rémy Degenne, Paulo Rauber
 module
 
 public import LeanMachineLearning.MeasureTheory.Measure.AbsolutelyContinuous
-public import LeanMachineLearning.SequentialLearning.Algorithm
+public import LeanMachineLearning.SequentialLearning.AlgorithmDensity
 
 /-! # The Uniform Algorithm -/
 
 @[expose] public section
 
 open MeasureTheory ProbabilityTheory Learning
+
+open scoped Algorithm
 
 namespace Bandits
 
