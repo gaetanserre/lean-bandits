@@ -8,7 +8,6 @@ autoImplicit = false
 relaxedAutoImplicit = false
 # Enable all mathlib linters: automatically matches what mathlib uses.
 weak.linter.mathlibStandardSet = true
-weak.linter.defsWithUnderscore = false
 
 [[require]]
 name = "mathlib"
