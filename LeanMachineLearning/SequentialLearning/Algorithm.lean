@@ -59,7 +59,7 @@ instance (alg : Algorithm 𝓐 𝓨) : IsProbabilityMeasure alg.p0 := alg.hp0
 
 /-- An algorithm with observations in `𝓧 × 𝓨` obtained from an algorithm with observations in `𝓨`
 by ignoring the `𝓧` component of each observation. -/
-def Algorithm.prod_left (𝓧 : Type*) [MeasurableSpace 𝓧] (alg : Algorithm 𝓐 𝓨) :
+def Algorithm.prodLeft (𝓧 : Type*) [MeasurableSpace 𝓧] (alg : Algorithm 𝓐 𝓨) :
     Algorithm 𝓐 (𝓧 × 𝓨) where
   policy n := (alg.policy n).comap (fun h i ↦ ((h i).1, (h i).2.2)) (by fun_prop)
   p0 := alg.p0
