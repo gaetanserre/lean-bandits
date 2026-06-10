@@ -5,7 +5,6 @@ lake build
 lake exe manual --output LMLTutorial/_out/site
 mkdir -p LMLTutorial/_out/site/html-multi/static
 cp LMLTutorial/static_files/* LMLTutorial/_out/site/html-multi/static
-cd ..
 
 # Copy outputs to home_page
 mkdir -p home_page/tutorial
