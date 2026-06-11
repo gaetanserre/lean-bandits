@@ -1,6 +1,6 @@
 import VersoManual
 
-import Manual.Front
+import LMLTutorial.Front
 
 open Verso.Genre.Manual Verso.Output.Html
 
@@ -16,4 +16,4 @@ def config : RenderConfig := {
   issueLink := some "https://github.com/LeanMachineLearning/LML/issues",
 }
 
-def main := manualMain (%doc Manual.Front) (config := config)
+def main := manualMain (%doc LMLTutorial.Front) (config := config)
