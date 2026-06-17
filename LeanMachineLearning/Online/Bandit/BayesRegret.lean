@@ -11,8 +11,8 @@ public import LeanMachineLearning.Online.Bandit.Regret
 /-!
 # Bayesian regret
 
-This file defines `actionMean`, `bestAction`, `gap`, and `regret` as random variables in measurable
-space `Ω`. These definitions are useful when `IsBayesAlgEnvSeq Q κ alg E A Y P`.
+This file defines `actionMean`, `bestAction`, `gap`, and `regret` as random variables in a
+measurable space `Ω`. These definitions are useful when `IsBayesAlgEnvSeq Q κ alg E A Y P`.
 
 Recall that `IsBayesAlgEnvSeq Q κ alg E A Y P` states that there is a measure `P : Measure Ω` such
 that the parameter `E : Ω → 𝓔` has law `Q` and that the sequences of actions `A : ℕ → Ω → 𝓐` and
