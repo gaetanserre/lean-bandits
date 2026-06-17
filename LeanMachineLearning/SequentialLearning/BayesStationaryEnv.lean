@@ -213,15 +213,13 @@ def gap (κ : Kernel (𝓔 × 𝓐) ℝ) (E : Ω → 𝓔) (A : ℕ → Ω → �
 omit [MeasurableSpace Ω] in
 /-- The gap is non-negative if the means are bounded by `u : ℝ` (even if `𝓐` is not `Finite`). -/
 lemma gap_nonneg_of_le {κ : Kernel (𝓔 × 𝓐) ℝ} {E : Ω → 𝓔} {A : ℕ → Ω → 𝓐} {n : ℕ} {ω : Ω} {u : ℝ}
-    (h : ∀ e a, (κ (e, a))[id] ≤ u) : 0 ≤ gap κ E A n ω := by
-  simp_rw [gap, Bandits.gap, Kernel.sectR_apply]
-  linarith [le_ciSup ⟨u, Set.forall_mem_range.2 fun a ↦ (h (E ω) a)⟩ (A n ω)]
+    (h : ∀ e a, (κ (e, a))[id] ≤ u) : 0 ≤ gap κ E A n ω :=
+  Bandits.gap_nonneg_of_le (h (E ω))
 
 omit [MeasurableSpace Ω] in
 lemma gap_le_of_mem_Icc [Nonempty 𝓐] {κ : Kernel (𝓔 × 𝓐) ℝ} {E : Ω → 𝓔} {A : ℕ → Ω → 𝓐} {n : ℕ}
-    {ω : Ω} {l u : ℝ} (h : ∀ e a, (κ (e, a))[id] ∈ Set.Icc l u) : gap κ E A n ω ≤ u - l := by
-  simp_rw [gap, Bandits.gap, Kernel.sectR_apply]
-  grind [ciSup_le (fun a ↦ (h (E ω) a).2)]
+    {ω : Ω} {l u : ℝ} (h : ∀ e a, (κ (e, a))[id] ∈ Set.Icc l u) : gap κ E A n ω ≤ u - l :=
+  Bandits.gap_le_of_mem_Icc (h (E ω))
 
 omit [MeasurableSpace Ω] in
 lemma gap_eq_sub [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSingletonClass 𝓐]
