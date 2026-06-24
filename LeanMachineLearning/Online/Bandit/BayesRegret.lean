@@ -5,7 +5,7 @@ Authors: Paulo Rauber, Rémy Degenne
 -/
 module
 
-public import LeanMachineLearning.ForMathlib.MeasureTheory.Constructions.BorelSpace.MeasurableArgMax
+public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.MeasurableArg
 public import LeanMachineLearning.Online.Bandit.Regret
 
 /-!
@@ -70,12 +70,13 @@ lemma integrable_uncurry_actionMean_comp [Countable 𝓐] [MeasurableSingletonCl
 noncomputable
 def bestAction [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSingletonClass 𝓐]
     (κ : Kernel (𝓔 × 𝓐) ℝ) (E : Ω → 𝓔) (ω : Ω) : 𝓐 :=
-  measurableArgmax (fun ω' a ↦ actionMean κ E a ω') ω
+  measurableArgmax (fun a ↦ actionMean κ E a ω)
 
 @[fun_prop]
 lemma measurable_bestAction [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSingletonClass 𝓐]
-    {κ : Kernel (𝓔 × 𝓐) ℝ} {E : Ω → 𝓔} (hE : Measurable E) : Measurable (bestAction κ E) :=
-  measurable_measurableArgmax (by fun_prop)
+    {κ : Kernel (𝓔 × 𝓐) ℝ} {E : Ω → 𝓔} (hE : Measurable E) : Measurable (bestAction κ E) := by
+  unfold bestAction
+  fun_prop
 
 /-- A random variable that gives the gap at time `n`. -/
 noncomputable
@@ -100,7 +101,7 @@ lemma gap_eq_sub [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSing
   rw [gap, Bandits.gap]
   congr
   apply le_antisymm
-  · exact ciSup_le (isMaxOn_measurableArgmax (fun ω' a ↦ actionMean κ E a ω') ω)
+  · exact ciSup_le <| isMaxOn_measurableArgmax (fun a ↦ actionMean κ E a ω)
   · exact Finite.le_ciSup (fun a ↦ actionMean κ E a ω) _
 
 @[fun_prop]
