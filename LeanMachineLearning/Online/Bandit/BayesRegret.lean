@@ -70,7 +70,7 @@ lemma integrable_uncurry_actionMean_comp [Countable 𝓐] [MeasurableSingletonCl
 noncomputable
 def bestAction [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSingletonClass 𝓐]
     (κ : Kernel (𝓔 × 𝓐) ℝ) (E : Ω → 𝓔) (ω : Ω) : 𝓐 :=
-  measurableArgmax (fun a ↦ actionMean κ E a ω)
+  argmax (fun a ↦ actionMean κ E a ω)
 
 @[fun_prop]
 lemma measurable_bestAction [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSingletonClass 𝓐]
@@ -101,7 +101,7 @@ lemma gap_eq_sub [Nonempty 𝓐] [Fintype 𝓐] [Encodable 𝓐] [MeasurableSing
   rw [gap, Bandits.gap]
   congr
   apply le_antisymm
-  · exact ciSup_le <| isMaxOn_measurableArgmax (fun a ↦ actionMean κ E a ω)
+  · exact ciSup_le <| isMaxOn_argmax (fun a ↦ actionMean κ E a ω)
   · exact Finite.le_ciSup (fun a ↦ actionMean κ E a ω) _
 
 @[fun_prop]

@@ -6,7 +6,13 @@ Authors: Gaëtan Serré
 module
 
 public import LeanMachineLearning.ForMathlib.MeasureTheory.Order.Lattice
-public import Mathlib
+public import Mathlib.CategoryTheory.Countable
+public import Mathlib.MeasureTheory.Constructions.Polish.Basic
+public import Mathlib.Order.CompletePartialOrder
+
+/-! # Measurable argmax and argmin functions
+
+-/
 
 @[expose] public section
 
@@ -35,11 +41,11 @@ lemma exists_argmax : ∃ i, f i = f.max := by
   exact ⟨i, hi.symm⟩
 
 /-- The index of the maximum value of a tuple. -/
-noncomputable def measurableArgmax := (exists_argmax f).choose
+noncomputable def argmax := (exists_argmax f).choose
 
-lemma argmax_spec : f (measurableArgmax f) = f.max := (exists_argmax f).choose_spec
+lemma argmax_spec : f (argmax f) = f.max := (exists_argmax f).choose_spec
 
-lemma isMaxOn_measurableArgmax (x : ι) : f x ≤ f (measurableArgmax f) := by
+lemma isMaxOn_argmax (x : ι) : f x ≤ f (argmax f) := by
   rw [argmax_spec f]
   exact f.le_max x
 
@@ -52,11 +58,11 @@ lemma exists_argmin : ∃ i, f i = f.min := by
   exact ⟨i, hi.symm⟩
 
 /-- The index of the minimum value of a tuple. -/
-noncomputable def measurableArgmin := (exists_argmin f).choose
+noncomputable def argmin := (exists_argmin f).choose
 
-lemma argmin_spec : f (measurableArgmin f) = f.min := (exists_argmin f).choose_spec
+lemma argmin_spec : f (argmin f) = f.min := (exists_argmin f).choose_spec
 
-lemma isMinOn_measurableArgmin (x : ι) : f (measurableArgmin f) ≤ f x := by
+lemma isMinOn_argmin (x : ι) : f (argmin f) ≤ f x := by
   rw [argmin_spec f]
   exact f.min_le x
 
@@ -67,11 +73,11 @@ lemma neg_max_eq_min_neg [AddGroup α] [AddLeftMono α] [AddRightMono α] : -f.m
   · simp; grind
   · simp only [inf'_le_iff, mem_univ, Pi.neg_apply, neg_le_neg_iff, sup'_le_iff, forall_const,
       true_and]
-    exact ⟨measurableArgmax f, isMaxOn_measurableArgmax f⟩
+    exact ⟨argmax f, isMaxOn_argmax f⟩
 
 variable [MeasurableSpace α]
 
-section MeasurableArgmax
+section argmax
 
 @[fun_prop]
 lemma measurable_max [MeasurableSup₂ α] : Measurable (fun (t : ι → α) => t.max) := by
@@ -82,12 +88,12 @@ lemma measurable_max [MeasurableSup₂ α] : Measurable (fun (t : ι → α) => 
 
 @[fun_prop]
 lemma measurable_argmax [MeasurableSpace ι] [MeasurableEq α] [MeasurableSup₂ α] :
-    Measurable fun f : ι → α ↦ measurableArgmax f := by
+    Measurable fun f : ι → α ↦ argmax f := by
   refine measurable_to_countable' fun i ↦ ?_
   simp only [Set.preimage, Set.mem_singleton_iff]
   let Maximizers (f : ι → α) : Set ι := {i | f i = f.max}
-  suffices {f : ι → α | measurableArgmax f = i} = ⋃ (S)
-      (hS : ∀ x, Maximizers x = S → measurableArgmax x = i), {f | Maximizers f = S} by
+  suffices {f : ι → α | argmax f = i} = ⋃ (S)
+      (hS : ∀ x, Maximizers x = S → argmax x = i), {f | Maximizers f = S} by
     rw [this]
     refine MeasurableSet.iUnion fun S ↦ (.iUnion fun hS ↦ ?_)
     exact measurableSet_eq_fun (by fun_prop) measurable_const
@@ -100,9 +106,9 @@ lemma measurable_argmax [MeasurableSpace ι] [MeasurableEq α] [MeasurableSup₂
   · intro h
     exact h f rfl
 
-end MeasurableArgmax
+end argmax
 
-section MeasurableArgmin
+section argmin
 
 @[fun_prop]
 lemma measurable_min [MeasurableInf₂ α] : Measurable (fun (f : ι → α) => f.min) := by
@@ -113,12 +119,12 @@ lemma measurable_min [MeasurableInf₂ α] : Measurable (fun (f : ι → α) => 
 
 @[fun_prop]
 lemma measurable_argmin [MeasurableSpace ι] [MeasurableEq α] [MeasurableInf₂ α] :
-    Measurable fun f : ι → α ↦ measurableArgmin f := by
+    Measurable fun f : ι → α ↦ argmin f := by
   refine measurable_to_countable' fun i ↦ ?_
   simp only [Set.preimage, Set.mem_singleton_iff]
   let Minimizers (f : ι → α) : Set ι := {i | f i = f.min}
-  suffices {f : ι → α | measurableArgmin f = i} = ⋃ (S)
-      (hS : ∀ x, Minimizers x = S → measurableArgmin x = i), {f | Minimizers f = S} by
+  suffices {f : ι → α | argmin f = i} = ⋃ (S)
+      (hS : ∀ x, Minimizers x = S → argmin x = i), {f | Minimizers f = S} by
     rw [this]
     refine MeasurableSet.iUnion fun S ↦ (.iUnion fun hS ↦ ?_)
     exact measurableSet_eq_fun (by fun_prop) measurable_const
@@ -131,4 +137,4 @@ lemma measurable_argmin [MeasurableSpace ι] [MeasurableEq α] [MeasurableInf₂
   · intro h
     exact h f rfl
 
-end MeasurableArgmin
+end argmin
