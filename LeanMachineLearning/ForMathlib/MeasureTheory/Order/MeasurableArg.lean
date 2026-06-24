@@ -62,8 +62,7 @@ lemma isMinOn_measurableArgmin (x : ι) : f (measurableArgmin f) ≤ f x := by
 
 end Argmin
 
-lemma neg_max_eq_min_neg [AddGroup α] [AddLeftMono α] [AddRightMono α] :
-    -f.max = (-f).min := by
+lemma neg_max_eq_min_neg [AddGroup α] [AddLeftMono α] [AddRightMono α] : -f.max = (-f).min := by
   refine le_antisymm ?_ ?_
   · simp; grind
   · simp only [inf'_le_iff, mem_univ, Pi.neg_apply, neg_le_neg_iff, sup'_le_iff, forall_const,
