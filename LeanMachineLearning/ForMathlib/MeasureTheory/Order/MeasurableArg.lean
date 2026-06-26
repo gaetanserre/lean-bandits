@@ -62,7 +62,7 @@ lemma measurable_max [MeasurableSup₂ α] : Measurable (fun (t : ι → α) => 
   ext
   simp [Function.max]
 
-@[fun_prop]
+@[to_dual (attr := fun_prop)]
 lemma measurable_argmax [MeasurableSpace ι] [MeasurableEq α] [MeasurableSup₂ α] :
     Measurable fun f : ι → α ↦ argmax f := by
   refine measurable_to_countable' fun i ↦ ?_
