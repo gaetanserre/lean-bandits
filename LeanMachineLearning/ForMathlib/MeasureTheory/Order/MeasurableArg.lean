@@ -54,7 +54,7 @@ lemma isMaxOn_argmax (x : ι) : f x ≤ f (argmax f) := by
 
 variable [MeasurableSpace α]
 
-@[fun_prop]
+@[to_dual (attr := fun_prop)]
 lemma measurable_max [MeasurableSup₂ α] : Measurable (fun (t : ι → α) => t.max) := by
   suffices (fun f : ι → α ↦ f.max) = (univ.sup' univ_nonempty fun i f => f i) by
     rw [this]
