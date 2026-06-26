@@ -86,7 +86,8 @@ lemma measurable_max [MeasurableSup₂ α] : Measurable (fun (t : ι → α) => 
   suffices (fun f : ι → α ↦ f.max) = (univ.sup' univ_nonempty fun i f => f i) by
     rw [this]
     exact measurable_sup' univ_nonempty (fun i _ => measurable_pi_apply i)
-  ext; simp [Function.max]
+  ext
+  simp [Function.max]
 
 @[fun_prop]
 lemma measurable_argmax [MeasurableSpace ι] [MeasurableEq α] [MeasurableSup₂ α] :
